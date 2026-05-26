@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💻 CodeSage
 
-## Getting Started
+> AI code review assistant. Paste your code, get instant feedback on bugs, performance, style, and best practices.
 
-First, run the development server:
+![CodeSage](proof/commit-log.png)
+
+CodeSage analyzes your code snippets and provides structured reviews covering:
+- Potential bugs and logic errors
+- Performance bottlenecks
+- Code style and readability improvements
+- Security concerns
+- Best practice suggestions
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install && npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to use
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Select your programming language from the dropdown
+2. Paste or type your code in the editor
+3. Choose a review focus (general, performance, security, style)
+4. Click **Analyze** — get a detailed review with line-by-line feedback
 
-## Learn More
+## Tech
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js 16 + TypeScript
+- Tailwind CSS 4
+- MiMo v2.5 Pro (Xiaomi)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Environment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+MIMO_API_URL=http://localhost:19911/v1/chat/completions
+MIMO_API_KEY=your_key
+```
 
-## Deploy on Vercel
+## Project layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/app/
+├── api/review/route.ts    ← Code review API endpoint
+├── page.tsx               ← Editor + review panel
+├── globals.css            ← Neumorphic light theme
+└── layout.tsx
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Design
+
+Light neumorphic UI. Soft shadows on a light gray canvas (#e8ecf1), purple accent (#6c5ce7). Buttons use inset/raised shadow states for tactile feedback. Inter font throughout.
+
+---
+
+*Crafted with MiMo v2.5 Pro* — AI code analysis powered by [Xiaomi's MiMo](https://huggingface.co/XiaomiMiMo).
+
+MIT
