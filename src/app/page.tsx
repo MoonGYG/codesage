@@ -110,6 +110,66 @@ export async function retry<T>(
   },
 ];
 
+const SAMPLE_EXAMPLE_CODE = `import { useState, useEffect } from "react";
+
+function UserProfile({ userId }) {
+  const [data, setData] = useState(null);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(\`/api/users/\${userId}\`);
+      const result = await response.json();
+      setData(result);
+    };
+    fetchData();
+
+    const handler = () => setCount(count + 1);
+    window.addEventListener("resize", handler);
+  }, []);
+
+  return <div>{data?.name} - {count}</div>;
+}`;
+
+const SAMPLE_ANALYSIS: Finding[] = [
+  {
+    severity: "critical",
+    title: "Missing dependency in useEffect",
+    description:
+      "The effect uses 'userId' from props but it is not included in the dependency array. This means the effect won't re-run when userId changes, causing stale data to be displayed.",
+    line: 6,
+    suggestion:
+      "Add 'userId' to the dependency array: }, [userId]) — or use an ESLint rule like react-hooks/exhaustive-deps to catch this automatically.",
+  },
+  {
+    severity: "critical",
+    title: "No cleanup for event listener",
+    description:
+      "A 'resize' event listener is added to window but never removed. Each time the effect re-runs, a new listener is attached, causing a memory leak and duplicate handler calls.",
+    line: 6,
+    suggestion:
+      "Return a cleanup function from useEffect: return () => window.removeEventListener('resize', handler);",
+  },
+  {
+    severity: "warning",
+    title: "Stale closure over 'count' state",
+    description:
+      "The resize handler captures 'count' at the time the effect runs. Since the dependency array is empty, 'count' is always 0 inside the handler, so setCount always sets it to 1.",
+    line: 13,
+    suggestion:
+      "Use the functional update form: setCount(prev => prev + 1) — this avoids needing 'count' in the closure at all.",
+  },
+  {
+    severity: "info",
+    title: "No error handling for fetch request",
+    description:
+      "The fetch call has no try/catch or .catch() handler. Network errors, 404s, or invalid JSON will result in unhandled promise rejections.",
+    line: 8,
+    suggestion:
+      "Wrap fetchData in a try/catch block and set an error state, or use an AbortController for cancellable requests with cleanup.",
+  },
+];
+
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState(0);
   const [findings, setFindings] = useState<Finding[]>([]);
@@ -121,6 +181,13 @@ export default function Home() {
 
   const currentFile = SAMPLE_FILES[selectedFile];
   const codeLines = (showCustom ? customCode : currentFile.code).split("\n");
+
+  function handleExample() {
+    setCustomCode(SAMPLE_EXAMPLE_CODE);
+    setShowCustom(true);
+    setFindings(SAMPLE_ANALYSIS);
+    setReviewed(true);
+  }
 
   const severityOrder: Record<string, number> = {
     critical: 0,
@@ -378,6 +445,28 @@ export default function Home() {
         </header>
 
         {/* Content Area — Code + Findings */}
+        {/* Try Example Button */}
+        <div style={{ padding: "0 20px", marginTop: 8 }}>
+          <button
+            className="neu-btn"
+            onClick={handleExample}
+            style={{
+              width: "100%",
+              padding: "12px 16px",
+              fontSize: 13,
+              fontWeight: 600,
+              border: "2px dashed var(--accent)",
+              background: "transparent",
+              color: "var(--accent)",
+              cursor: "pointer",
+              borderRadius: 12,
+              transition: "all 0.2s ease",
+            }}
+          >
+            ⚡ Try Example — React Hook Analysis
+          </button>
+        </div>
+
         <div style={{ flex: 1, display: "flex", gap: 20, padding: "16px 20px", overflow: "hidden" }}>
           {/* Code Panel */}
           <div
